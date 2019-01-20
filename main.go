@@ -54,6 +54,10 @@ func main() {
 			Name:  "slack-icon-emoji",
 			Usage: "Slack icon emoji to post",
 		},
+		&cli.StringFlag{
+			Name:  "github-api-base",
+			Usage: "Github API base URL",
+		},
 	}
 	app.Action = func(c *cli.Context) error {
 		issues, err := searchGithubIssues(c.String("github-token"))
