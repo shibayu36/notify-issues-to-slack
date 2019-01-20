@@ -16,6 +16,7 @@ import (
 func main() {
 	app := &cli.App{}
 	app.Name = "notify-issues-to-slack"
+	app.UsageText = "notify-issues-to-slack -github-token=... -slack-webhook-url=... -query=... [-danger-over=...] [-warning-over=...] [-slack-channel=...] [-slack-text=...] [-slack-username=...] [-slack-icon-emoji=...]"
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
 			Name:  "github-token",
@@ -24,6 +25,34 @@ func main() {
 		&cli.StringFlag{
 			Name:  "slack-webhook-url",
 			Usage: "Slack webhook URL",
+		},
+		&cli.StringFlag{
+			Name:  "query",
+			Usage: "Query to search Github issues",
+		},
+		&cli.StringFlag{
+			Name:  "danger-over",
+			Usage: "Colorize the issue's attachment danger",
+		},
+		&cli.StringFlag{
+			Name:  "warning-over",
+			Usage: "Colorize the issue's attachment warning",
+		},
+		&cli.StringFlag{
+			Name:  "slack-channel",
+			Usage: "Slack channel to be posted",
+		},
+		&cli.StringFlag{
+			Name:  "slack-text",
+			Usage: "text to post with issues",
+		},
+		&cli.StringFlag{
+			Name:  "slack-username",
+			Usage: "Slack username to post",
+		},
+		&cli.StringFlag{
+			Name:  "slack-icon-emoji",
+			Usage: "Slack icon emoji to post",
 		},
 	}
 	app.Action = func(c *cli.Context) error {
