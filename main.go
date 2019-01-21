@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
@@ -9,14 +8,13 @@ import (
 
 	slack "github.com/ashwanthkumar/slack-go-webhook"
 	"github.com/google/go-github/github"
-	"golang.org/x/oauth2"
 	cli "gopkg.in/urfave/cli.v2"
 )
 
 func main() {
 	app := &cli.App{}
 	app.Name = "notify-issues-to-slack"
-	app.UsageText = "notify-issues-to-slack -github-token=... -slack-webhook-url=... -query=... [-danger-over=...] [-warning-over=...] [-slack-channel=...] [-slack-text=...] [-slack-username=...] [-slack-icon-emoji=...]"
+	app.UsageText = "notify-issues-to-slack -github-token=... -slack-webhook-url=... -query=... [-danger-over=...] [-warning-over=...] [-slack-channel=...] [-slack-text=...] [-slack-username=...] [-slack-icon-emoji=...] [-github-api-url=...]"
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
 			Name:  "github-token",
@@ -55,12 +53,16 @@ func main() {
 			Usage: "Slack icon emoji to post",
 		},
 		&cli.StringFlag{
-			Name:  "github-api-base",
+			Name:  "github-api-url",
 			Usage: "Github API base URL",
 		},
 	}
 	app.Action = func(c *cli.Context) error {
-		issues, err := searchGithubIssues(c.String("github-token"))
+		gc := &githubClient{
+			apiURL: c.String("github-api-url"),
+			token:  c.String("github-token"),
+		}
+		issues, err := gc.searchGithubIssues(c.String("query"))
 		if err != nil {
 			return err
 		}
@@ -71,23 +73,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func searchGithubIssues(token string) ([]github.Issue, error) {
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: token},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-
-	client := github.NewClient(tc)
-	i, _, err := client.Search.Issues(ctx, "repo:playframework/playframework label:\"help wanted\" label:\"topic:documentation\" state:open", &github.SearchOptions{Sort: "created", Order: "asc"})
-	// fmt.Println(res)
-	if err != nil {
-		return nil, err
-	}
-	// fmt.Println(i)
-	return i.Issues, nil
 }
 
 func postIssuesToSlack(webhookURL string, issues []github.Issue) {
