@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	cli "gopkg.in/urfave/cli.v2"
 )
@@ -63,12 +64,28 @@ func main() {
 			return err
 		}
 
+		var dangerOver, warningOver time.Duration
+		if c.String("danger-over") != "" {
+			dangerOver, err = time.ParseDuration(c.String("danger-over"))
+			if err != nil {
+				return err
+			}
+		}
+		if c.String("warning-over") != "" {
+			warningOver, err = time.ParseDuration(c.String("warning-over"))
+			if err != nil {
+				return err
+			}
+		}
+
 		sc := &slackClient{webhookURL: c.String("slack-webhook-url")}
 		sc.postIssuesToSlack(issues, &slackPostOptions{
-			Text:      c.String("slack-text"),
-			Channel:   c.String("slack-channel"),
-			Username:  c.String("slack-username"),
-			IconEmoji: c.String("slack-icon-emoji"),
+			Text:        c.String("slack-text"),
+			Channel:     c.String("slack-channel"),
+			Username:    c.String("slack-username"),
+			IconEmoji:   c.String("slack-icon-emoji"),
+			DangerOver:  &dangerOver,
+			WarningOver: &warningOver,
 		})
 		return nil
 	}
