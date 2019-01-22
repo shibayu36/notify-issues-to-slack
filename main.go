@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"time"
 
 	cli "gopkg.in/urfave/cli.v2"
@@ -11,6 +13,7 @@ import (
 func main() {
 	app := &cli.App{}
 	app.Name = "notify-issues-to-slack"
+	app.Version = fmt.Sprintf("%s (rev: %s/%s)", version, revision, runtime.Version())
 	app.UsageText = "notify-issues-to-slack -github-token=... -slack-webhook-url=... -query=... [-danger-over=...] [-warning-over=...] [-slack-channel=...] [-slack-text=...] [-slack-username=...] [-slack-icon-emoji=...] [-github-api-url=...]"
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
