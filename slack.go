@@ -29,7 +29,11 @@ func (s *slackClient) postIssuesToSlack(issues []github.Issue, opt *slackPostOpt
 			user = i.GetUser()
 		}
 
-		title := fmt.Sprintf("@%s %s", user.GetLogin(), i.GetTitle())
+		title := fmt.Sprintf(
+			"%s @%s",
+			i.GetTitle(),
+			user.GetLogin(),
+		)
 		color := s.getColorByIssue(i, opt.DangerOver, opt.WarningOver)
 		a := slack.Attachment{
 			Title:     &title,
