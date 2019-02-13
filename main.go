@@ -14,7 +14,7 @@ func main() {
 	app := &cli.App{}
 	app.Name = "notify-issues-to-slack"
 	app.Version = fmt.Sprintf("%s (rev: %s/%s)", version, revision, runtime.Version())
-	app.UsageText = "notify-issues-to-slack -github-token=... -slack-webhook-url=... -query=... [-danger-over=...] [-warning-over=...] [-slack-channel=...] [-slack-text=...] [-slack-username=...] [-slack-icon-emoji=...] [-github-api-url=...]"
+	app.UsageText = "notify-issues-to-slack -github-token=... -slack-webhook-url=... -query=... [-danger-over=...] [-warning-over=...] [-channel=...] [-text=...] [-username=...] [-icon-emoji=...] [-github-api-url=...]"
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
 			Name:  "github-token",
@@ -37,19 +37,19 @@ func main() {
 			Usage: "Colorize the issue's attachment warning",
 		},
 		&cli.StringFlag{
-			Name:  "slack-channel",
+			Name:  "channel",
 			Usage: "Slack channel to be posted",
 		},
 		&cli.StringFlag{
-			Name:  "slack-text",
+			Name:  "text",
 			Usage: "text to post with issues",
 		},
 		&cli.StringFlag{
-			Name:  "slack-username",
+			Name:  "username",
 			Usage: "Slack username to post",
 		},
 		&cli.StringFlag{
-			Name:  "slack-icon-emoji",
+			Name:  "icon-emoji",
 			Usage: "Slack icon emoji to post",
 		},
 		&cli.StringFlag{
@@ -83,10 +83,10 @@ func main() {
 
 		sc := &slackClient{webhookURL: c.String("slack-webhook-url")}
 		sc.postIssuesToSlack(issues, &slackPostOptions{
-			Text:        c.String("slack-text"),
-			Channel:     c.String("slack-channel"),
-			Username:    c.String("slack-username"),
-			IconEmoji:   c.String("slack-icon-emoji"),
+			Text:        c.String("text"),
+			Channel:     c.String("channel"),
+			Username:    c.String("username"),
+			IconEmoji:   c.String("icon-emoji"),
 			DangerOver:  &dangerOver,
 			WarningOver: &warningOver,
 		})
