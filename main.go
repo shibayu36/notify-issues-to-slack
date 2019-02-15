@@ -45,6 +45,10 @@ func main() {
 			Usage: "text to post with issues",
 		},
 		&cli.StringFlag{
+			Name:  "issue-text-format",
+			Usage: "Text format of each issues used for message attachment",
+		},
+		&cli.StringFlag{
 			Name:  "username",
 			Usage: "Slack username to post",
 		},
@@ -83,12 +87,13 @@ func main() {
 
 		sc := &slackClient{webhookURL: c.String("slack-webhook-url")}
 		sc.postIssuesToSlack(issues, &slackPostOptions{
-			Text:        c.String("text"),
-			Channel:     c.String("channel"),
-			Username:    c.String("username"),
-			IconEmoji:   c.String("icon-emoji"),
-			DangerOver:  &dangerOver,
-			WarningOver: &warningOver,
+			Text:            c.String("text"),
+			IssueTextFormat: c.String("issue-text-format"),
+			Channel:         c.String("channel"),
+			Username:        c.String("username"),
+			IconEmoji:       c.String("icon-emoji"),
+			DangerOver:      &dangerOver,
+			WarningOver:     &warningOver,
 		})
 		return nil
 	}

@@ -2,60 +2,105 @@ package main
 
 import (
 	"fmt"
+	"strings"
+	"text/template"
 	"time"
 
 	slack "github.com/ashwanthkumar/slack-go-webhook"
 	"github.com/google/go-github/github"
 )
 
+// slackClient has the role of formatting the issues and posting them to slack.
 type slackClient struct {
 	webhookURL string
 }
 
 type slackPostOptions struct {
-	Text        string
-	Channel     string
-	Username    string
-	IconEmoji   string
-	DangerOver  *time.Duration
-	WarningOver *time.Duration
+	Text            string
+	IssueTextFormat string
+	Channel         string
+	Username        string
+	IconEmoji       string
+	DangerOver      *time.Duration
+	WarningOver     *time.Duration
 }
 
+const (
+	defaultIssueTextFormat = "{{.GetTitle}} @{{if .GetAssignee }}{{.GetAssignee.GetLogin}}{{else}}{{.GetUser.GetLogin}}{{end}}"
+)
+
 func (s *slackClient) postIssuesToSlack(issues []github.Issue, opt *slackPostOptions) error {
+	issueTextFormat := opt.IssueTextFormat
+	if issueTextFormat == "" {
+		issueTextFormat = defaultIssueTextFormat
+	}
+
 	attachments := []slack.Attachment{}
 	for _, i := range issues {
-		user := i.GetAssignee()
-		if user == nil {
-			user = i.GetUser()
+		issueText, err := s.formatIssueText(issueTextFormat, i)
+		if err != nil {
+			fmt.Println(err)
+			return err
 		}
-
-		title := fmt.Sprintf(
-			"%s @%s",
-			i.GetTitle(),
-			user.GetLogin(),
-		)
 		color := s.getColorByIssue(i, opt.DangerOver, opt.WarningOver)
 		a := slack.Attachment{
-			Title:     &title,
+			Title:     &issueText,
 			TitleLink: i.HTMLURL,
 			Color:     &color,
 		}
 		attachments = append(attachments, a)
 	}
+
+	text, err := s.formatText(opt.Text, issues)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
 	payload := slack.Payload{
 		Channel:     opt.Channel,
-		Text:        opt.Text,
+		Text:        text,
 		Username:    opt.Username,
 		IconEmoji:   opt.IconEmoji,
 		Attachments: attachments,
 		LinkNames:   "1",
 	}
-	err := slack.Send(s.webhookURL, "", payload)
-	if len(err) > 0 {
-		fmt.Println(err)
+	errs := slack.Send(s.webhookURL, "", payload)
+	if len(errs) > 0 {
+		fmt.Println(errs)
 	}
 
 	return nil
+}
+
+func (s *slackClient) formatText(format string, issues []github.Issue) (string, error) {
+	t, err := template.New("slack-text").Parse(format)
+	if err != nil {
+		return "", err
+	}
+
+	var text strings.Builder
+	err = t.Execute(&text, issues)
+	if err != nil {
+		return "", err
+	}
+
+	return text.String(), nil
+}
+
+func (s *slackClient) formatIssueText(format string, issue github.Issue) (string, error) {
+	t, err := template.New("issue-text").Parse(format)
+	if err != nil {
+		return "", err
+	}
+
+	var text strings.Builder
+	err = t.Execute(&text, &issue)
+	if err != nil {
+		return "", err
+	}
+
+	return text.String(), nil
 }
 
 func (s *slackClient) getColorByIssue(issue github.Issue, dangerOver *time.Duration, warningOver *time.Duration) string {
