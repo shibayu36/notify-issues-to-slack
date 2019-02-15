@@ -16,30 +16,35 @@ type slackClient struct {
 }
 
 type slackPostOptions struct {
-	Text        string
-	Channel     string
-	Username    string
-	IconEmoji   string
-	DangerOver  *time.Duration
-	WarningOver *time.Duration
+	Text            string
+	IssueTextFormat string
+	Channel         string
+	Username        string
+	IconEmoji       string
+	DangerOver      *time.Duration
+	WarningOver     *time.Duration
 }
 
+const (
+	defaultIssueTextFormat = "{{.GetTitle}} @{{if .GetAssignee }}{{.GetAssignee.GetLogin}}{{else}}{{.GetUser.GetLogin}}{{end}}"
+)
+
 func (s *slackClient) postIssuesToSlack(issues []github.Issue, opt *slackPostOptions) error {
+	issueTextFormat := opt.IssueTextFormat
+	if issueTextFormat == "" {
+		issueTextFormat = defaultIssueTextFormat
+	}
+
 	attachments := []slack.Attachment{}
 	for _, i := range issues {
-		user := i.GetAssignee()
-		if user == nil {
-			user = i.GetUser()
+		issueText, err := s.formatIssueText(issueTextFormat, i)
+		if err != nil {
+			fmt.Println(err)
+			return err
 		}
-
-		title := fmt.Sprintf(
-			"%s @%s",
-			i.GetTitle(),
-			user.GetLogin(),
-		)
 		color := s.getColorByIssue(i, opt.DangerOver, opt.WarningOver)
 		a := slack.Attachment{
-			Title:     &title,
+			Title:     &issueText,
 			TitleLink: i.HTMLURL,
 			Color:     &color,
 		}
@@ -76,6 +81,21 @@ func (s *slackClient) formatText(format string, issues []github.Issue) (string, 
 
 	var text strings.Builder
 	err = t.Execute(&text, issues)
+	if err != nil {
+		return "", err
+	}
+
+	return text.String(), nil
+}
+
+func (s *slackClient) formatIssueText(format string, issue github.Issue) (string, error) {
+	t, err := template.New("issue-text").Parse(format)
+	if err != nil {
+		return "", err
+	}
+
+	var text strings.Builder
+	err = t.Execute(&text, &issue)
 	if err != nil {
 		return "", err
 	}
