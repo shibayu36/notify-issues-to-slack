@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/google/go-github/github"
 	cli "gopkg.in/urfave/cli.v2"
 )
 
@@ -33,8 +34,16 @@ func main() {
 			Usage: "Colorize the issue's attachment danger",
 		},
 		&cli.StringFlag{
+			Name:  "danger-filter",
+			Usage: "Colorize the issue's attachment danger. You can use Github search queries",
+		},
+		&cli.StringFlag{
 			Name:  "warning-over",
 			Usage: "Colorize the issue's attachment warning",
+		},
+		&cli.StringFlag{
+			Name:  "warning-filter",
+			Usage: "Colorize the issue's attachment warning. You can use Github search queries",
 		},
 		&cli.StringFlag{
 			Name:  "channel",
@@ -62,13 +71,31 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) error {
+		query := c.String("query")
+
 		gc := &githubClient{
 			apiURL: c.String("github-api-url"),
 			token:  c.String("github-token"),
 		}
-		issues, err := gc.searchGithubIssues(c.String("query"))
+		issues, err := gc.searchGithubIssues(query)
 		if err != nil {
 			return err
+		}
+
+		warningIssues := []github.Issue{}
+		if wf := c.String("warning-filter"); wf != "" {
+			warningIssues, err = gc.searchGithubIssues(query + " " + wf)
+			if err != nil {
+				return err
+			}
+		}
+
+		dangerIssues := []github.Issue{}
+		if df := c.String("danger-filter"); df != "" {
+			dangerIssues, err = gc.searchGithubIssues(query + " " + df)
+			if err != nil {
+				return err
+			}
 		}
 
 		var dangerOver, warningOver time.Duration
@@ -86,7 +113,7 @@ func main() {
 		}
 
 		sc := &slackClient{webhookURL: c.String("slack-webhook-url")}
-		sc.postIssuesToSlack(issues, &slackPostOptions{
+		sc.postIssuesToSlack(issues, warningIssues, dangerIssues, &slackPostOptions{
 			Text:            c.String("text"),
 			IssueTextFormat: c.String("issue-text-format"),
 			Channel:         c.String("channel"),

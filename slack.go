@@ -29,20 +29,24 @@ const (
 	defaultIssueTextFormat = "{{.GetTitle}} @{{if .GetAssignee }}{{.GetAssignee.GetLogin}}{{else}}{{.GetUser.GetLogin}}{{end}}"
 )
 
-func (s *slackClient) postIssuesToSlack(issues []github.Issue, opt *slackPostOptions) error {
+func (s *slackClient) postIssuesToSlack(issues []github.Issue, warningIssues []github.Issue, dangerIssues []github.Issue, opt *slackPostOptions) error {
 	issueTextFormat := opt.IssueTextFormat
 	if issueTextFormat == "" {
 		issueTextFormat = defaultIssueTextFormat
 	}
 
+	warningIssueMap := s.makeIssueExistsMap(warningIssues)
+	dangerIssueMap := s.makeIssueExistsMap(dangerIssues)
+
 	attachments := []slack.Attachment{}
 	for _, i := range issues {
+		i.GetID()
 		issueText, err := s.formatIssueText(issueTextFormat, i)
 		if err != nil {
 			fmt.Println(err)
 			return err
 		}
-		color := s.getColorByIssue(i, opt.DangerOver, opt.WarningOver)
+		color := s.getColorByIssue(i, warningIssueMap, dangerIssueMap)
 		a := slack.Attachment{
 			Title:     &issueText,
 			TitleLink: i.HTMLURL,
@@ -103,15 +107,20 @@ func (s *slackClient) formatIssueText(format string, issue github.Issue) (string
 	return text.String(), nil
 }
 
-func (s *slackClient) getColorByIssue(issue github.Issue, dangerOver *time.Duration, warningOver *time.Duration) string {
-	durationFromIssueCreated := time.Now().Sub(issue.GetCreatedAt())
-
-	color := "good"
-	if dangerOver != nil && durationFromIssueCreated.Hours() > dangerOver.Hours() {
-		color = "danger"
-	} else if warningOver != nil && durationFromIssueCreated.Hours() > warningOver.Hours() {
-		color = "warning"
+func (s *slackClient) getColorByIssue(issue github.Issue, warningIssueMap map[int64]bool, dangerIssueMap map[int64]bool) string {
+	if dangerIssueMap[issue.GetID()] {
+		return "danger"
+	} else if warningIssueMap[issue.GetID()] {
+		return "warning"
+	} else {
+		return "good"
 	}
+}
 
-	return color
+func (s *slackClient) makeIssueExistsMap(issues []github.Issue) map[int64]bool {
+	issueExistsMap := map[int64]bool{}
+	for _, i := range issues {
+		issueExistsMap[i.GetID()] = true
+	}
+	return issueExistsMap
 }
