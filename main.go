@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 	"runtime"
-	"time"
 
+	"github.com/google/go-github/github"
 	cli "gopkg.in/urfave/cli.v2"
 )
 
@@ -14,7 +14,7 @@ func main() {
 	app := &cli.App{}
 	app.Name = "notify-issues-to-slack"
 	app.Version = fmt.Sprintf("%s (rev: %s/%s)", version, revision, runtime.Version())
-	app.UsageText = "notify-issues-to-slack -github-token=... -slack-webhook-url=... -query=... [-danger-over=...] [-warning-over=...] [-channel=...] [-text=...] [-username=...] [-icon-emoji=...] [-github-api-url=...]"
+	app.UsageText = "notify-issues-to-slack -github-token=... -slack-webhook-url=... -query=... [-danger-filter=...] [-warning-filter=...] [-channel=...] [-text=...] [-username=...] [-icon-emoji=...] [-github-api-url=...]"
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
 			Name:  "github-token",
@@ -29,12 +29,12 @@ func main() {
 			Usage: "Query to search Github issues",
 		},
 		&cli.StringFlag{
-			Name:  "danger-over",
-			Usage: "Colorize the issue's attachment danger",
+			Name:  "danger-filter",
+			Usage: "Colorize the issue's attachment danger. You can use Github search queries",
 		},
 		&cli.StringFlag{
-			Name:  "warning-over",
-			Usage: "Colorize the issue's attachment warning",
+			Name:  "warning-filter",
+			Usage: "Colorize the issue's attachment warning. You can use Github search queries",
 		},
 		&cli.StringFlag{
 			Name:  "channel",
@@ -62,38 +62,40 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) error {
+		query := convertRelativeTimeQuery(c.String("query"))
+
 		gc := &githubClient{
 			apiURL: c.String("github-api-url"),
 			token:  c.String("github-token"),
 		}
-		issues, err := gc.searchGithubIssues(c.String("query"))
+		issues, err := gc.searchGithubIssues(query)
 		if err != nil {
 			return err
 		}
 
-		var dangerOver, warningOver time.Duration
-		if c.String("danger-over") != "" {
-			dangerOver, err = time.ParseDuration(c.String("danger-over"))
+		warningIssues := []github.Issue{}
+		if wf := c.String("warning-filter"); wf != "" {
+			warningIssues, err = gc.searchGithubIssues(query + " " + convertRelativeTimeQuery(wf))
 			if err != nil {
 				return err
 			}
 		}
-		if c.String("warning-over") != "" {
-			warningOver, err = time.ParseDuration(c.String("warning-over"))
+
+		dangerIssues := []github.Issue{}
+		if df := c.String("danger-filter"); df != "" {
+			dangerIssues, err = gc.searchGithubIssues(query + " " + convertRelativeTimeQuery(df))
 			if err != nil {
 				return err
 			}
 		}
 
 		sc := &slackClient{webhookURL: c.String("slack-webhook-url")}
-		sc.postIssuesToSlack(issues, &slackPostOptions{
+		sc.postIssuesToSlack(issues, warningIssues, dangerIssues, &slackPostOptions{
 			Text:            c.String("text"),
 			IssueTextFormat: c.String("issue-text-format"),
 			Channel:         c.String("channel"),
 			Username:        c.String("username"),
 			IconEmoji:       c.String("icon-emoji"),
-			DangerOver:      &dangerOver,
-			WarningOver:     &warningOver,
 		})
 		return nil
 	}
