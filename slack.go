@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
-	"time"
 
 	slack "github.com/ashwanthkumar/slack-go-webhook"
 	"github.com/google/go-github/github"
@@ -21,8 +20,6 @@ type slackPostOptions struct {
 	Channel         string
 	Username        string
 	IconEmoji       string
-	DangerOver      *time.Duration
-	WarningOver     *time.Duration
 }
 
 const (
