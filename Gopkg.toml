@@ -37,6 +37,10 @@
   name = "github.com/ashwanthkumar/slack-go-webhook"
   version = "v0.3"
 
+[[constraint]]
+  name = "github.com/karrick/tparse"
+  version = "v2.6.1"
+
 [prune]
   go-tests = true
   unused-packages = true

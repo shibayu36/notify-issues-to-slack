@@ -71,7 +71,7 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) error {
-		query := c.String("query")
+		query := convertRelativeTimeQuery(c.String("query"))
 
 		gc := &githubClient{
 			apiURL: c.String("github-api-url"),
@@ -84,7 +84,7 @@ func main() {
 
 		warningIssues := []github.Issue{}
 		if wf := c.String("warning-filter"); wf != "" {
-			warningIssues, err = gc.searchGithubIssues(query + " " + wf)
+			warningIssues, err = gc.searchGithubIssues(query + " " + convertRelativeTimeQuery(wf))
 			if err != nil {
 				return err
 			}
@@ -92,7 +92,7 @@ func main() {
 
 		dangerIssues := []github.Issue{}
 		if df := c.String("danger-filter"); df != "" {
-			dangerIssues, err = gc.searchGithubIssues(query + " " + df)
+			dangerIssues, err = gc.searchGithubIssues(query + " " + convertRelativeTimeQuery(df))
 			if err != nil {
 				return err
 			}

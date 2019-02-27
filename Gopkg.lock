@@ -34,6 +34,14 @@
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:c874dad16816f86f49476f6f70ac82e282ec8c7c256b2b187461ad10cdef9e06"
+  name = "github.com/karrick/tparse"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "01217819bead9d238dc62e8a054ca09486e2c1a1"
+  version = "v2.6.1"
+
+[[projects]]
   digest = "1:7aefb397a53fc437c90f0fdb3e1419c751c5a3a165ced52325d5d797edf1aca6"
   name = "github.com/moul/http2curl"
   packages = ["."]
@@ -68,18 +76,18 @@
     "publicsuffix",
   ]
   pruneopts = "UT"
-  revision = "915654e7eabcea33ae277abbecf52f0d8b7a9fdc"
+  revision = "3a22650c66bd7f4fb6d1e8072ffd7b75c8a27898"
 
 [[projects]]
   branch = "master"
-  digest = "1:e007b54f54cbd4214aa6d97a67d57bc2539991adb4e22ea92c482bbece8de469"
+  digest = "1:c664d4451770ebc9ab63d54bccb9e4f2c6106cde7e566ea02889930b836c7d4c"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
     "internal",
   ]
   pruneopts = "UT"
-  revision = "5dab4167f31cbd76b407f1486c86b40748bc5073"
+  revision = "3e8b2be1363542a95c52ea0796d4a40dacfb5b95"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -134,6 +142,7 @@
   input-imports = [
     "github.com/ashwanthkumar/slack-go-webhook",
     "github.com/google/go-github/github",
+    "github.com/karrick/tparse",
     "golang.org/x/oauth2",
     "gopkg.in/urfave/cli.v2",
   ]
