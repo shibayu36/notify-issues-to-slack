@@ -37,7 +37,6 @@ func (s *slackClient) postIssuesToSlack(issues []github.Issue, warningIssues []g
 
 	attachments := []slack.Attachment{}
 	for _, i := range issues {
-		i.GetID()
 		issueText, err := s.formatIssueText(issueTextFormat, i)
 		if err != nil {
 			fmt.Println(err)
