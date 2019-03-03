@@ -1,6 +1,7 @@
 # notify-issues-to-slack
+
 [![Build Status](https://travis-ci.org/shibayu36/notify-issues-to-slack.svg?branch=master)](https://travis-ci.org/shibayu36/notify-issues-to-slack)
-[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)][license]
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 This project is alpha quality.  The interface may change in the future.
 
