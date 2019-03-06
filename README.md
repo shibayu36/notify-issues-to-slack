@@ -13,13 +13,13 @@ The CLI tool to notify Github issues and pull requests to Slack with color like 
 ## Installation
 
 ### go get
-```
+```console
 $ go get github.com/shibayu36/notify-issues-to-slack
 $ notify-issues-to-slack --help
 ```
 
 ### Docker
-```
+```console
 $ git clone https://github.com/shibayu36/notify-issues-to-slack.git
 $ cd notify-issues-to-slack
 $ docker build -t notify-issues-to-slack .
@@ -32,14 +32,14 @@ Built binaries are available on gihub releases.
 
 ## Synopsis
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... -query='repo:shibayu36/notify-issues-to-slack state:open label:"bug"' -text="Please check bug reports @shibayu36"
 ```
 
 ## Usage
 You can post issues and pull requests matched by `-query` to slack.  By `-query` options, you can use all syntax on [Searching issues and pull requests](https://help.github.com/en/articles/searching-issues-and-pull-requests) document.
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
     -query='repo:shibayu36/notify-issues-to-slack state:open label:"bug"' \
     -text="Please check bug reports @shibayu36" \
@@ -48,7 +48,7 @@ $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
 
 Github doesn't support relative time query, but `-query` option supports this.
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
     -query='repo:shibayu36/notify-issues-to-slack state:open label:"bug" created:<now-1w' \
     -text="Please check bug reports made more than a week ago @shibayu36"
@@ -56,7 +56,7 @@ $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
 
 You can colorize issue attachments using `-danger-filter` and `warning-filter`.  Like `-query` option, you can use github's search query.  Following example colorize an issue danger if its last update is a week ago, and colorize an issue warning if its last update is three days ago.
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
     -query='repo:shibayu36/notify-issues-to-slack state:open label:"bug"' \
     -danger-filter='updated:<now-1w' \
@@ -65,7 +65,7 @@ $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
 
 Of course, you can customize slack username and icon.
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
     -query='repo:shibayu36/notify-issues-to-slack state:open label:"bug"' \
     -username='bug reporter' \
@@ -74,7 +74,7 @@ $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
 
 If you use Github Enterprise, please specify `-github-api-url`.
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
     -github-api-url='https://ghe.example.com/api/v3'
     -query=...
@@ -87,7 +87,7 @@ If you want to customize text's and attachment's format posted to slack, `-text`
 
 For example, you can use following command if you want to post "please review them" when issues are found, and to post "no review request" when issues are not found by your query
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
     -query=...
     -text="{{ if . }}please review them @channel{{ else }}no review request{{end}}"
@@ -95,7 +95,7 @@ $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
 
 And following command customizes each issue's format.
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
     -query=...
     -issue-text-format="{{.GetTitle}}: created by @{{.GetUser.GetLogin}} at {{.GetCreatedAt}}"
@@ -104,7 +104,7 @@ $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
 ## Useful queries
 Following command colorizes warning when no reviewer is assigned, and colorizes danger when no reviewer is assigned since two days ago.
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
     -query='repo:shibayu36/notify-issues-to-slack label:"review required" state:open' \
     -warning-filter="type:pr review:none" \
@@ -113,7 +113,7 @@ $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
 
 Following command notifies issues with "In Progress" label but without assignee.
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
     -query='repo:shibayu36/notify-issues-to-slack label:"In Progress" state:open no:assignee' \
     -text='Do you forget deciding the assignment?'
@@ -121,7 +121,7 @@ $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
 
 Following command notifies pull requests assigned me as reviewer.
 
-```
+```console
 $ notify-issues-to-slack -github-token=... -slack-webhook-url=... \
     -query='repo:shibayu36/notify-issues-to-slack state:open type:pr review-requested:shibayu36'
 ```
