@@ -13,8 +13,14 @@ import (
 func main() {
 	app := &cli.App{}
 	app.Name = "notify-issues-to-slack"
+	app.Usage = "The CLI tool to notify Github issues and pull requests to Slack with color."
 	app.Version = fmt.Sprintf("%s (rev: %s/%s)", version, revision, runtime.Version())
 	app.UsageText = "notify-issues-to-slack -github-token=... -slack-webhook-url=... -query=... [-danger-filter=...] [-warning-filter=...] [-channel=...] [-text=...] [-username=...] [-icon-emoji=...] [-github-api-url=...]"
+	cli.AppHelpTemplate = fmt.Sprintf(`%s
+SEE ALSO:
+   Please see https://github.com/shibayu36/notify-issues-to-slack for detailed usage.
+`, cli.AppHelpTemplate)
+
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
 			Name:  "github-token",
