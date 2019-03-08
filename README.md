@@ -8,7 +8,7 @@ This project is alpha quality.  The interface may change in the future.
 ## Description
 The CLI tool to notify Github issues and pull requests to Slack with color like following.  It is useful for review reminder and checking issues regularly.
 
-![example](./images/example.png)
+<img src="https://github.com/shibayu36/notify-issues-to-slack/raw/master/images/example.png" alt="example" style="max-width:100%;">
 
 ## Installation
 
