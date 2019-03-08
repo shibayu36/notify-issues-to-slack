@@ -20,10 +20,8 @@ $ notify-issues-to-slack --help
 
 ### Docker
 ```console
-$ git clone https://github.com/shibayu36/notify-issues-to-slack.git
-$ cd notify-issues-to-slack
-$ docker build -t notify-issues-to-slack .
-$ docker run --rm notify-issues-to-slack -help
+$ docker pull shibayu36/notify-issues-to-slack
+$ docker run --rm shibayu36/notify-issues-to-slack -help
 ```
 
 ### Built binaries
