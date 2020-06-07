@@ -1,0 +1,24 @@
+name: daily bug report
+
+on:
+  schedule:
+    - cron: 30 12 * * 1-5 # UTC 12:30 on weekdays
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: daily bug report
+        env:
+          # You have to use personal access token if you
+          # want to access other repositories.
+          # Create secrets ( named NOTIFY_ISSUES_GITHUB_TOKEN in this example ) in repository settings, and use it.
+          GITHUB_TOKEN: ${{ secrets.NOTIFY_ISSUES_GITHUB_TOKEN }}
+        run: |
+          docker pull shibayu36/notify-issues-to-slack
+          docker run --rm shibayu36/notify-issues-to-slack \
+            -github-token=${GITHUB_TOKEN} \
+            -slack-webhook-url=... \
+            -query='repo:shibayu36/notify-issues-to-slack state:open label:"bug"' \
+            -text="Please check bug reports @shibayu36" \
+            -channel="bug-report-channel"
