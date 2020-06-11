@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v21/github"
 	cli "gopkg.in/urfave/cli.v2"
 )
 

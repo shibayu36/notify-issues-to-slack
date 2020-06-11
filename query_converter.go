@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/karrick/tparse"
+	tparse "github.com/karrick/tparse/v2"
 )
 
 var (

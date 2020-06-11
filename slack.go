@@ -6,7 +6,7 @@ import (
 	"text/template"
 
 	slack "github.com/ashwanthkumar/slack-go-webhook"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v21/github"
 )
 
 // slackClient has the role of formatting the issues and posting them to slack.
