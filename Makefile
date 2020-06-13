@@ -5,20 +5,18 @@ ifdef update
   u=-u
 endif
 
-deps:
-	go get ${u} github.com/golang/dep/cmd/dep
-	dep ensure
+export GO111MODULE=on
 
-devel-deps: deps
-	go get ${u} golang.org/x/lint/golint \
+devel-deps:
+	go install ${u} golang.org/x/lint/golint \
 	  github.com/mattn/goveralls              \
-	  github.com/motemen/gobump/cmd/gobump    \
+	  github.com/x-motemen/gobump/cmd/gobump    \
 	  github.com/Songmu/goxz/cmd/goxz         \
 	  github.com/Songmu/ghch/cmd/ghch         \
 	  github.com/tcnksm/ghr
 
-test: deps
-	go test
+test:
+	go test -v ./...
 
 lint: devel-deps
 	go vet
@@ -27,7 +25,7 @@ lint: devel-deps
 cover: devel-deps
 	goveralls
 
-build: deps
+build:
 	go build -ldflags=$(BUILD_LDFLAGS) .
 
 bump: devel-deps
@@ -42,4 +40,4 @@ upload:
 
 release: bump crossbuild upload
 
-.PHONY: test deps devel-deps lint cover build bump crossbuild upload release
+.PHONY: test devel-deps lint cover build bump crossbuild upload release
