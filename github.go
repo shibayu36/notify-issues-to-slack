@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/google/go-github/v21/github"
+	"github.com/google/go-github/v32/github"
 	"golang.org/x/oauth2"
 )
 
@@ -46,7 +46,7 @@ func (c *githubClient) makeClient(ctx context.Context) (*github.Client, error) {
 	return client, nil
 }
 
-func (c *githubClient) searchGithubIssues(query string) ([]github.Issue, error) {
+func (c *githubClient) searchGithubIssues(query string) ([]*github.Issue, error) {
 	ctx := context.Background()
 	client, err := c.makeClient(ctx)
 	if err != nil {

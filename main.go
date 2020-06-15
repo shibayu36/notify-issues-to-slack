@@ -6,8 +6,8 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/google/go-github/v21/github"
-	cli "gopkg.in/urfave/cli.v2"
+	"github.com/google/go-github/v32/github"
+	cli "github.com/urfave/cli/v2"
 )
 
 func main() {
@@ -79,7 +79,7 @@ SEE ALSO:
 			return err
 		}
 
-		warningIssues := []github.Issue{}
+		warningIssues := []*github.Issue{}
 		if wf := c.String("warning-filter"); wf != "" {
 			warningIssues, err = gc.searchGithubIssues(query + " " + convertRelativeTimeQuery(wf))
 			if err != nil {
@@ -87,7 +87,7 @@ SEE ALSO:
 			}
 		}
 
-		dangerIssues := []github.Issue{}
+		dangerIssues := []*github.Issue{}
 		if df := c.String("danger-filter"); df != "" {
 			dangerIssues, err = gc.searchGithubIssues(query + " " + convertRelativeTimeQuery(df))
 			if err != nil {
