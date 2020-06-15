@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.1.1](https://github.com/shibayu36/notify-issues-to-slack/compare/v0.1.0...v0.1.1) (2020-06-15)
+
+* Update all dependencies to the latest [#11](https://github.com/shibayu36/notify-issues-to-slack/pull/11) ([shibayu36](https://github.com/shibayu36))
+* Manage dependencies by go.mod instead of dep [#10](https://github.com/shibayu36/notify-issues-to-slack/pull/10) ([shibayu36](https://github.com/shibayu36))
+* GitHub actions example [#9](https://github.com/shibayu36/notify-issues-to-slack/pull/9) ([shibayu36](https://github.com/shibayu36))
+* Use docker pull to install [#8](https://github.com/shibayu36/notify-issues-to-slack/pull/8) ([shibayu36](https://github.com/shibayu36))
+* Absolute image path [#7](https://github.com/shibayu36/notify-issues-to-slack/pull/7) ([shibayu36](https://github.com/shibayu36))
+
 ## [v0.1.0](https://github.com/shibayu36/notify-issues-to-slack/compare/v0.0.2...v0.1.0) (2019-03-06)
 
 * Add detailed usage to README.md [#6](https://github.com/shibayu36/notify-issues-to-slack/pull/6) ([shibayu36](https://github.com/shibayu36))
