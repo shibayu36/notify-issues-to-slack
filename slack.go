@@ -6,7 +6,7 @@ import (
 	"text/template"
 
 	slack "github.com/ashwanthkumar/slack-go-webhook"
-	"github.com/google/go-github/v21/github"
+	"github.com/google/go-github/v32/github"
 )
 
 // slackClient has the role of formatting the issues and posting them to slack.
@@ -26,7 +26,7 @@ const (
 	defaultIssueTextFormat = "{{.GetTitle}} @{{if .GetAssignee }}{{.GetAssignee.GetLogin}}{{else}}{{.GetUser.GetLogin}}{{end}}"
 )
 
-func (s *slackClient) postIssuesToSlack(issues []github.Issue, warningIssues []github.Issue, dangerIssues []github.Issue, opt *slackPostOptions) error {
+func (s *slackClient) postIssuesToSlack(issues []*github.Issue, warningIssues []*github.Issue, dangerIssues []*github.Issue, opt *slackPostOptions) error {
 	issueTextFormat := opt.IssueTextFormat
 	if issueTextFormat == "" {
 		issueTextFormat = defaultIssueTextFormat
@@ -73,7 +73,7 @@ func (s *slackClient) postIssuesToSlack(issues []github.Issue, warningIssues []g
 	return nil
 }
 
-func (s *slackClient) formatText(format string, issues []github.Issue) (string, error) {
+func (s *slackClient) formatText(format string, issues []*github.Issue) (string, error) {
 	t, err := template.New("slack-text").Parse(format)
 	if err != nil {
 		return "", err
@@ -88,7 +88,7 @@ func (s *slackClient) formatText(format string, issues []github.Issue) (string, 
 	return text.String(), nil
 }
 
-func (s *slackClient) formatIssueText(format string, issue github.Issue) (string, error) {
+func (s *slackClient) formatIssueText(format string, issue *github.Issue) (string, error) {
 	t, err := template.New("issue-text").Parse(format)
 	if err != nil {
 		return "", err
@@ -103,7 +103,7 @@ func (s *slackClient) formatIssueText(format string, issue github.Issue) (string
 	return text.String(), nil
 }
 
-func (s *slackClient) getColorByIssue(issue github.Issue, warningIssueMap map[int64]bool, dangerIssueMap map[int64]bool) string {
+func (s *slackClient) getColorByIssue(issue *github.Issue, warningIssueMap map[int64]bool, dangerIssueMap map[int64]bool) string {
 	if dangerIssueMap[issue.GetID()] {
 		return "danger"
 	} else if warningIssueMap[issue.GetID()] {
@@ -113,7 +113,7 @@ func (s *slackClient) getColorByIssue(issue github.Issue, warningIssueMap map[in
 	}
 }
 
-func (s *slackClient) makeIssueExistsMap(issues []github.Issue) map[int64]bool {
+func (s *slackClient) makeIssueExistsMap(issues []*github.Issue) map[int64]bool {
 	issueExistsMap := map[int64]bool{}
 	for _, i := range issues {
 		issueExistsMap[i.GetID()] = true
